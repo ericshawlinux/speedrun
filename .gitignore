@@ -54,3 +54,6 @@ dkms.conf
 
 # dolphin directory entry
 .directory
+
+# the program name
+speedrun
