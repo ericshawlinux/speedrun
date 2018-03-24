@@ -14,6 +14,6 @@
 
 void SpeedrunSetTimerStart();
 void SpeedrunGetTimeString(char *, size_t);
-void SpeedrunSimplestFormFromSeconds(struct timespec, int *h, int *m, int *s, int *ms);
+void SpeedrunSimplestFormFromTimespec(struct timespec, int *h, int *m, int *s, int *ms);
 
 #endif

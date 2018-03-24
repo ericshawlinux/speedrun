@@ -17,7 +17,7 @@
 
 #define SECONDS_PER_MINUTE  60
 #define SECONDS_PER_HOUR    (SECONDS_PER_MINUTE * 60)
-#define MSECONDS_PER_SECOND 1000000
+#define NANOS_PER_MSECOND   1000000
 
 static struct timespec start = {0};
 
@@ -36,15 +36,15 @@ void SpeedrunGetTimeString(char *destination, size_t max_size)
     
     struct timespec diff = {now.tv_sec - start.tv_sec, now.tv_nsec};
     
-    SpeedrunSimplestFormFromSeconds(diff, &hours, &minutes, &seconds, &milliseconds);
+    SpeedrunSimplestFormFromTimespec(diff, &hours, &minutes, &seconds, &milliseconds);
     
     snprintf(destination, max_size, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
 }
 
-void SpeedrunSimplestFormFromSeconds(struct timespec time, int *hours, int *minutes, int *seconds, int *milliseconds)
+void SpeedrunSimplestFormFromTimespec(struct timespec time, int *hours, int *minutes, int *seconds, int *milliseconds)
 {
     *hours          = (int) (time.tv_sec / SECONDS_PER_HOUR);
     *minutes        = (int) (time.tv_sec / SECONDS_PER_MINUTE);
     *seconds        = (int) (time.tv_sec - *hours * SECONDS_PER_HOUR - *minutes * SECONDS_PER_MINUTE);
-    *milliseconds   = (int) (time.tv_nsec / MSECONDS_PER_SECOND);
+    *milliseconds   = (int) (time.tv_nsec / NANOS_PER_MSECOND);
 }
