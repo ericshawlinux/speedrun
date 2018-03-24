@@ -13,6 +13,12 @@
 #include <time.h>
 #include <string.h>
 
+#include "srun_timer.h"
+
+#define SECONDS_PER_MINUTE  60
+#define SECONDS_PER_HOUR    (SECONDS_PER_MINUTE * 60)
+#define MSECONDS_PER_SECOND 1000000
+
 static struct timespec start = {0};
 
 void SpeedrunSetTimerStart()
@@ -22,25 +28,23 @@ void SpeedrunSetTimerStart()
 
 void SpeedrunGetTimeString(char *destination, size_t max_size)
 {
-    // timespecs are used for getting nanoseconds. which need converted to milliseconds later.
+    int hours, minutes, seconds, milliseconds;
+    
     struct timespec now = {0};
-    // get some arbitrary time that represents now. CLOCK_MONOTONIC has a resolution of 1 nanosecond!
+    
     clock_gettime(CLOCK_MONOTONIC, &now);
     
-    // ts and buf are used for getting the time with a mere 1 second resolution
-    struct tm *ts;
-    char buf[15];
+    struct timespec diff = {now.tv_sec - start.tv_sec, now.tv_nsec};
     
-    // get the differene between now, and whatever start has been set to.
-    time_t diff = now.tv_sec - start.tv_sec;
+    SpeedrunSimplestFormFromSeconds(diff, &hours, &minutes, &seconds, &milliseconds);
     
-    // get the time as a string hh:mm:ss and store it in buf
-    ts = gmtime(&diff);
-    strftime(buf, sizeof(buf), "%H:%M:%S", ts);
-    
-    // get the thousandth of a second aka milliseconds. 0.001
-    long milliseconds = now.tv_nsec / 1000000;
-    
-    // combine hh:mm:ss and computed milliseconds then return it.
-    snprintf(destination, max_size, "%s.%03ld", buf, milliseconds);
+    snprintf(destination, max_size, "%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+}
+
+void SpeedrunSimplestFormFromSeconds(struct timespec time, int *hours, int *minutes, int *seconds, int *milliseconds)
+{
+    *hours          = (int) (time.tv_sec / SECONDS_PER_HOUR);
+    *minutes        = (int) (time.tv_sec / SECONDS_PER_MINUTE);
+    *seconds        = (int) (time.tv_sec - *hours * SECONDS_PER_HOUR - *minutes * SECONDS_PER_MINUTE);
+    *milliseconds   = (int) (time.tv_nsec / MSECONDS_PER_SECOND);
 }

@@ -16,6 +16,8 @@
 #include "usage.h"
 
 #include "srun.h"
+#include "srun_timer.h" // for TestCommand
+#include <time.h> // for nanosleep
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
@@ -51,5 +53,14 @@ void StubCommand(int argc __attribute__((unused)), const char **argv __attribute
 
 void TestCommand(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
 {
-
+    struct timespec sleeptime = {0, 1000000};
+    
+    SpeedrunSetTimerStart();
+    char time[1024] = {0};
+    
+    while(1) {
+        SpeedrunGetTimeString(time, 1024);
+        printf("%s\n", time);
+        nanosleep(&sleeptime, NULL);
+    }
 }
