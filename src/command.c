@@ -61,7 +61,7 @@ void TestCommand(int argc __attribute__((unused)), const char **argv __attribute
     
     while(1) {
         SpeedrunStopwatchGetTime(&hours, &minutes, &seconds, &milliseconds);
-        printf("\r%02d:%02d:%02d.%03d  ", hours, minutes, seconds, milliseconds);
+        printf("%02d:%02d:%02d.%03d\n", hours, minutes, seconds, milliseconds);
         nanosleep(&sleeptime, NULL);
     }
 }
