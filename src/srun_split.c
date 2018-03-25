@@ -10,6 +10,9 @@
  */
 
 #include <curses.h>
+#include <stdio.h>
+#include <string.h>
+#include <malloc.h>
 
 #include "srun_split.h"
 #include "srun_stopwatch.h"
@@ -18,19 +21,38 @@ static int current_split = 0;
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
-static char *test_splits[] = {
-    "Torture Skip",
-    "Exit Torture",
-    "Comm Twr A",
-    "Wolf 2",
-    "Raven 2",
-    "PAL Card",
-    "PAL Card (Hot)",
-    "MG REX",
-    "Liquid",
-    "Escape",
-    "Score"
-};
+static char **splits = NULL;
+
+static int splits_length = 0;
+
+static size_t longest_split_name = 0;
+
+#define MAX_SPLIT_LENGTH 100
+
+void SpeedrunSplitLoadFromDisk()
+{
+    FILE *fp = fopen("default-splits.txt", "r");
+    
+    if (fp == NULL) {
+        perror("SpeedrunSplitLoadFromDisk");
+        return;
+    }
+    
+    char buffer[MAX_SPLIT_LENGTH] = {0};
+    
+    while (fgets(buffer, MAX_SPLIT_LENGTH, fp) != NULL) {
+        size_t size = strlen(buffer) + 1;
+        buffer[strcspn(buffer, "\n")] = 0;
+        splits_length += 1;
+        splits = realloc(splits, splits_length * sizeof (char*));
+        int idx = splits_length - 1;
+        splits[idx] = malloc(size);
+        strncpy(splits[idx], buffer, size);
+        
+        if (longest_split_name < size)
+            longest_split_name = size;
+    }
+}
 
 void SpeedrunSplitStart()
 {
@@ -41,7 +63,7 @@ void SpeedrunSplitStart()
 
 void SpeedrunSplitNext()
 {
-    int max_split = ARRAY_SIZE(test_splits) - 1;
+    int max_split = splits_length - 1;
     current_split = (current_split >= max_split ? max_split : current_split + 1);
 }
 
@@ -56,15 +78,19 @@ void SpeedrunSplitDrawEmpty(int start)
 {
     int i;
     
-    for (i = start; i < (int) ARRAY_SIZE(test_splits); i++)
-        mvprintw(i, 0, "%-15s %11c  ", test_splits[i], '-');
+    for (i = start; i < (int) splits_length; i++)
+        mvprintw(i, 0, "%-*s %11c  ", longest_split_name, splits[i], '-');
     
     refresh();
 }
 
 void SpeedrunSplitDraw()
 {
+    if (current_split >= splits_length) {
+        mvprintw(0, 0, "no splits defined ");
+        return;
+    }
     int hours, minutes, seconds, milliseconds;
     SpeedrunStopwatchGetTime(&hours, &minutes, &seconds, &milliseconds);
-    mvprintw(current_split, 0, "%-15s %02d:%02d:%02d.%03d  ", test_splits[current_split], hours, minutes, seconds, milliseconds);
+    mvprintw(current_split, 0, "%-*s %02d:%02d:%02d.%03d  ", longest_split_name, splits[current_split], hours, minutes, seconds, milliseconds);
 }
