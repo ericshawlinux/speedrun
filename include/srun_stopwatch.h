@@ -1,4 +1,4 @@
-/* srun_timer.h
+/* srun_stopwatch.h
  *  
  * Created by Eric Shaw Jr on 2018-03-23
  * Copyright (c) 2018 Eric Shaw Jr.
@@ -9,11 +9,10 @@
  * or distributed except according to the terms contained in the LICENSE file.
  */
 
-#ifndef SRUN_TIMER_DEFINED
-#define SRUN_TIMER_DEFINED
+#ifndef SRUN_STOPWATCH_DEFINED
+#define SRUN_STOPWATCH_DEFINED
 
-void SpeedrunSetTimerStart();
-void SpeedrunGetTimeString(char *, size_t);
-void SpeedrunSimplestFormFromTimespec(struct timespec, int *h, int *m, int *s, int *ms);
+void SpeedrunStopwatchStart();
+void SpeedrunStopwatchGetTime(int *h, int *m, int *s, int *ms);
 
 #endif

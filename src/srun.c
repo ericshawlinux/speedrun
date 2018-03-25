@@ -13,7 +13,7 @@
 #include <time.h> // for nanosleep
 
 #include "srun.h"
-#include "srun_timer.h"
+#include "srun_stopwatch.h"
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
@@ -38,18 +38,17 @@ void SpeedrunInit()
     initscr();
     noecho();
     refresh();
-    SpeedrunInitializeDisplay(0);
-    SpeedrunSetTimerStart();
+    SpeedrunDrawSplits(0);
+    SpeedrunStopwatchStart();
 }
-
 
 void SpeedrunRoutine()
 {
-    struct timespec sleeptime = {0, 10000000};
-    
+    struct timespec sleeptime = {0, 1000000};
+
     int ch;
     nodelay(stdscr, TRUE);
-    
+
     for (;;) {
         
         if ((ch = getch()) != ERR) switch (ch) {
@@ -62,19 +61,19 @@ void SpeedrunRoutine()
             case 'U':
             case 'u':
                 current_split -= (current_split <= 0 ? 0 : 1);
-                SpeedrunInitializeDisplay(current_split);
+                SpeedrunDrawSplits(current_split);
                 break;
             
             case '0':
                 current_split = 0;
-                SpeedrunInitializeDisplay(0);
-                SpeedrunSetTimerStart();
+                SpeedrunDrawSplits(0);
+                SpeedrunStopwatchStart();
                 break;
             
             case KEY_F(5):
             case 'R':
             case 'r':
-                SpeedrunInitializeDisplay(current_split);
+                SpeedrunDrawSplits(current_split);
                 break;
                 
             case 'Q':
@@ -83,7 +82,8 @@ void SpeedrunRoutine()
                 break;
         }
         
-        SpeedrunUpdateCurrentSplit();
+        SpeedrunUpdateSplit(current_split);
+        refresh();
         
         // this program is resource intensive in a way so slow it down to conserve energy.
         // still screaming fast.
@@ -96,28 +96,19 @@ void SpeedrunEnd()
     endwin();
 }
 
-void SpeedrunUpdateCurrentSplit()
-{
-    char ts[15] = {0};
-    
-    SpeedrunGetTimeString(ts, 15);
-    
-    SpeedrunUpdateSplit(current_split, ts);
-    
-    refresh();
-}
-
-void SpeedrunInitializeDisplay(int start)
+void SpeedrunDrawSplits(int start)
 {
     int i;
     
     for (i = start; i < (int) ARRAY_SIZE(TestSplits); i++)
-        SpeedrunUpdateSplit(i, "- ");
+        mvprintw(i, 0, "%-15s %11c  ", TestSplits[i], '-');
     
     refresh();
 }
 
-void SpeedrunUpdateSplit(int split, char *timestr)
+void SpeedrunUpdateSplit(int split)
 {
-    mvprintw(split, 0, "%-15s %12s  ", TestSplits[split], timestr);
+    int hours, minutes, seconds, milliseconds;
+    SpeedrunStopwatchGetTime(&hours, &minutes, &seconds, &milliseconds);
+    mvprintw(split, 0, "%-15s %02d:%02d:%02d.%03d  ", TestSplits[split], hours, minutes, seconds, milliseconds);
 }
