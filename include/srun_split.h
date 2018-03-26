@@ -12,7 +12,7 @@
 #ifndef SRUN_SPLIT_DEFINED
 #define SRUN_SPLIT_DEFINED
 
-void SpeedrunSplitLoadFromDisk();
+int SpeedrunSplitLoadFromDisk(const char *);
 void SpeedrunSplitStart();
 void SpeedrunSplitNext();
 void SpeedrunSplitUndo();

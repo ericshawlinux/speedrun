@@ -15,7 +15,5 @@
 void SpeedrunInit();
 void SpeedrunEnd();
 void SpeedrunRoutine();
-void SpeedrunDrawSplits(int start);
-void SpeedrunUpdateSplit(int split);
 
 #endif

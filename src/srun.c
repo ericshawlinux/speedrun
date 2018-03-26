@@ -29,8 +29,6 @@ void SpeedrunRoutine()
 
     int ch;
     
-    SpeedrunSplitLoadFromDisk();
-    
     SpeedrunSplitStart();
 
     for (;;) {

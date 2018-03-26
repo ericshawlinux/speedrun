@@ -29,29 +29,43 @@ static size_t longest_split_name = 0;
 
 #define MAX_SPLIT_LENGTH 100
 
-void SpeedrunSplitLoadFromDisk()
+int SpeedrunSplitLoadFromDisk(const char *filename)
 {
-    FILE *fp = fopen("default-splits.txt", "r");
+    FILE *fp = fopen(filename, "r");
     
     if (fp == NULL) {
         perror("SpeedrunSplitLoadFromDisk");
-        return;
+        return 0;
     }
     
     char buffer[MAX_SPLIT_LENGTH] = {0};
     
     while (fgets(buffer, MAX_SPLIT_LENGTH, fp) != NULL) {
         size_t size = strlen(buffer) + 1;
-        buffer[strcspn(buffer, "\n")] = 0;
+        buffer[strcspn(buffer, "\r\n")] = 0;
         splits_length += 1;
         splits = realloc(splits, splits_length * sizeof (char*));
+        
+        if (splits == NULL) {
+            perror("SpeedrunSplitLoadFromDisk realloc");
+            return 0;
+        }
+        
         int idx = splits_length - 1;
         splits[idx] = malloc(size);
+        
+        if (splits[idx] == NULL) {
+            perror("SpeedrunSplitLoadFromDisk malloc");
+            return 0;
+        }
+        
         strncpy(splits[idx], buffer, size);
         
         if (longest_split_name < size)
             longest_split_name = size;
     }
+    
+    return 1;
 }
 
 void SpeedrunSplitStart()

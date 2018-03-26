@@ -20,6 +20,7 @@ struct Command
 
 struct Command *GetCommand(const char *s);
 void HelpCommand(int argc, const char **argv);
+void StartCommand(int argc, const char **argv);
 void StubCommand(int argc, const char **argv);
 void TestCommand(int argc, const char **argv);
 

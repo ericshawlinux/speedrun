@@ -16,6 +16,7 @@
 #include "usage.h"
 
 #include "srun.h"
+#include "srun_split.h"
 #include "srun_stopwatch.h" // for TestCommand
 #include <time.h> // for nanosleep
 
@@ -23,9 +24,10 @@
 
 static struct Command Commands[] =
 {
-    {"help", HelpCommand},
-    {"stub", StubCommand},
-    {"test", TestCommand},
+    {"help",    HelpCommand},
+    {"start",   StartCommand},
+    {"stub",    StubCommand},
+    {"test",    TestCommand},
 };
 
 struct Command *GetCommand(const char *s)
@@ -44,11 +46,27 @@ void HelpCommand(int argc __attribute__((unused)), const char **argv __attribute
     usage_fmt_s(usage_string, argv[0]);
 }
 
+void StartCommand(int argc, const char **argv)
+{
+    const char *filename = "default-splits.txt";
+    
+    if (argc == 3) {
+        filename = argv[2];
+    }
+    else if (argc > 3) {
+        usage_fmt_s(usage_string, argv[0]);
+        return;
+    }
+
+    SpeedrunInit();
+    if (SpeedrunSplitLoadFromDisk(filename))
+        SpeedrunRoutine();
+    SpeedrunEnd();
+}
+
 void StubCommand(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
 {
-    SpeedrunInit();
-    SpeedrunRoutine();
-    SpeedrunEnd();
+    
 }
 
 void TestCommand(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
