@@ -72,14 +72,12 @@ void StubCommand(int argc __attribute__((unused)), const char **argv __attribute
 void TestCommand(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
 {
     struct timespec sleeptime = {0, 1000000};
-    
-    SpeedrunStopwatchStart();
-    
-    int hours, minutes, seconds, milliseconds;
+    struct srun_stopwatch stopwatch = SpeedrunStopwatchStart();
+    struct srun_stopwatch *s = &stopwatch;
     
     while(1) {
-        SpeedrunStopwatchGetTime(&hours, &minutes, &seconds, &milliseconds);
-        printf("%02d:%02d:%02d.%03d\n", hours, minutes, seconds, milliseconds);
+        SpeedrunStopwatchTickTime(s);
+        printf("%02d:%02d:%02d.%03d\n", s->hours, s->minutes, s->seconds, s->milliseconds);
         nanosleep(&sleeptime, NULL);
     }
 }

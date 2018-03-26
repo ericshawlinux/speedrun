@@ -9,7 +9,7 @@
 # or distributed except according to the terms contained in the LICENSE file.
 
 CC       := gcc
-CFLAGS   := -Wall -Wextra -Werror
+CFLAGS   := -Wall -Wextra -Werror -g
 LIBRARYS := -lncurses
 INCLUDES := -I./include
 OBJECTS  := obj/srun_split.o obj/srun.o obj/srun_stopwatch.o obj/command.o obj/usage.o obj/main.o

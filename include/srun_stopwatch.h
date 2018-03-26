@@ -9,10 +9,27 @@
  * or distributed except according to the terms contained in the LICENSE file.
  */
 
+#include <time.h>
+ 
 #ifndef SRUN_STOPWATCH_DEFINED
 #define SRUN_STOPWATCH_DEFINED
 
-void SpeedrunStopwatchStart();
-void SpeedrunStopwatchGetTime(int *h, int *m, int *s, int *ms);
+struct srun_time {
+    int hours;
+    int minutes;
+    int seconds;
+    int milliseconds;
+};
+
+struct srun_stopwatch {
+    struct timespec start;
+    int hours;
+    int minutes;
+    int seconds;
+    int milliseconds;
+};
+
+struct srun_stopwatch SpeedrunStopwatchStart();
+void SpeedrunStopwatchTickTime(struct srun_stopwatch *);
 
 #endif

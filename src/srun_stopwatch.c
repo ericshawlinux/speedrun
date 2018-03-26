@@ -11,7 +11,6 @@
 
 #include <stdio.h>
 #include <time.h>
-#include <string.h>
 
 #include "srun_stopwatch.h"
 
@@ -20,28 +19,30 @@
 #define NANOS_PER_MSECOND   1000000
 #define NANOS_PER_SECOND    NANOS_PER_MSECOND * 1000
 
-static struct timespec start = {0};
-
-void SpeedrunStopwatchStart()
+struct srun_stopwatch SpeedrunStopwatchStart()
 {
-    clock_gettime(CLOCK_MONOTONIC, &start);
+    struct srun_stopwatch stopwatch = {0};
+    clock_gettime(CLOCK_MONOTONIC, &(stopwatch.start));
+    return stopwatch;
 }
 
-void SpeedrunStopwatchGetTime(int *hours, int *minutes, int *seconds, int *milliseconds)
+void SpeedrunStopwatchTickTime(struct srun_stopwatch *stopwatch)
 {
     struct timespec now = {0};
-    
     clock_gettime(CLOCK_MONOTONIC, &now);
     
-    struct timespec currtime = {now.tv_sec - start.tv_sec, now.tv_nsec - start.tv_nsec};
+    struct timespec currtime = {
+        now.tv_sec - stopwatch->start.tv_sec,
+        now.tv_nsec - stopwatch->start.tv_nsec
+    };
     
     if (currtime.tv_nsec < 0) {
         currtime.tv_sec -= 1;
         currtime.tv_nsec = NANOS_PER_SECOND + currtime.tv_nsec;
     }
     
-    *hours          = (int) (currtime.tv_sec / SECONDS_PER_HOUR);
-    *minutes        = (int) (currtime.tv_sec / SECONDS_PER_MINUTE);
-    *seconds        = (int) (currtime.tv_sec - *hours * SECONDS_PER_HOUR - *minutes * SECONDS_PER_MINUTE);
-    *milliseconds   = (int) (currtime.tv_nsec / NANOS_PER_MSECOND);
+    stopwatch->hours        = (int) (currtime.tv_sec / SECONDS_PER_HOUR);
+    stopwatch->minutes      = (int) (currtime.tv_sec / SECONDS_PER_MINUTE);
+    stopwatch->seconds      = (int) (currtime.tv_sec - stopwatch->hours * SECONDS_PER_HOUR - stopwatch->minutes * SECONDS_PER_MINUTE);
+    stopwatch->milliseconds = (int) (currtime.tv_nsec / NANOS_PER_MSECOND);
 }

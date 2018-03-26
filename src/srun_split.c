@@ -17,17 +17,14 @@
 #include "srun_split.h"
 #include "srun_stopwatch.h"
 
-static int current_split = 0;
+static struct srun_stopwatch stopwatch = {0};
 
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
+static struct srun_split    *splits = NULL;
+static int                  splits_count = 0;
+static int                  current_split_idx = 0;
+static size_t               split_name_width = 0;
 
-static char **splits = NULL;
-
-static int splits_length = 0;
-
-static size_t longest_split_name = 0;
-
-#define MAX_SPLIT_LENGTH 100
+#define MAX_SPLIT_NAME_LENGTH 100
 
 int SpeedrunSplitLoadFromDisk(const char *filename)
 {
@@ -38,31 +35,35 @@ int SpeedrunSplitLoadFromDisk(const char *filename)
         return 0;
     }
     
-    char buffer[MAX_SPLIT_LENGTH] = {0};
+    char buffer[MAX_SPLIT_NAME_LENGTH] = {0};
     
-    while (fgets(buffer, MAX_SPLIT_LENGTH, fp) != NULL) {
+    while (fgets(buffer, MAX_SPLIT_NAME_LENGTH, fp) != NULL) {
+        
+        struct srun_split current_split = {0};
+        
         size_t size = strlen(buffer) + 1;
         buffer[strcspn(buffer, "\r\n")] = 0;
-        splits_length += 1;
-        splits = realloc(splits, splits_length * sizeof (char*));
+        splits_count += 1;
+        
+        splits = realloc(splits, splits_count * sizeof current_split);
         
         if (splits == NULL) {
             perror("SpeedrunSplitLoadFromDisk realloc");
             return 0;
         }
         
-        int idx = splits_length - 1;
-        splits[idx] = malloc(size);
+        int idx = splits_count - 1;
+        splits[idx].name = malloc(size);
         
-        if (splits[idx] == NULL) {
+        if (splits[idx].name == NULL) {
             perror("SpeedrunSplitLoadFromDisk malloc");
             return 0;
         }
         
-        strncpy(splits[idx], buffer, size);
+        strncpy(splits[idx].name, buffer, size);
         
-        if (longest_split_name < size)
-            longest_split_name = size;
+        if (split_name_width < size)
+            split_name_width = size;
     }
     
     return 1;
@@ -70,41 +71,39 @@ int SpeedrunSplitLoadFromDisk(const char *filename)
 
 void SpeedrunSplitStart()
 {
-    current_split = 0;
+    current_split_idx = 0;
     SpeedrunSplitDrawEmpty(0);
-    SpeedrunStopwatchStart();
+    stopwatch = SpeedrunStopwatchStart();
 }
 
 void SpeedrunSplitNext()
 {
-    int max_split = splits_length - 1;
-    current_split = (current_split >= max_split ? max_split : current_split + 1);
+    int max_split = splits_count - 1;
+    current_split_idx = (current_split_idx >= max_split ? max_split : current_split_idx + 1);
 }
 
 void SpeedrunSplitUndo()
 {
-    current_split = (current_split <= 0 ? 0 : current_split - 1);
-    SpeedrunSplitDrawEmpty(current_split);
+    current_split_idx = (current_split_idx <= 0 ? 0 : current_split_idx - 1);
+    SpeedrunSplitDrawEmpty(current_split_idx);
 }
-
 
 void SpeedrunSplitDrawEmpty(int start)
 {
     int i;
     
-    for (i = start; i < (int) splits_length; i++)
-        mvprintw(i, 0, "%-*s %11c  ", longest_split_name, splits[i], '-');
+    for (i = start; i < (int) splits_count; i++)
+        mvprintw(i, 0, "%-*s %11c  ", split_name_width, splits[i].name, '-');
     
     refresh();
 }
 
 void SpeedrunSplitDraw()
 {
-    if (current_split >= splits_length) {
+    if (current_split_idx >= splits_count) {
         mvprintw(0, 0, "no splits defined ");
         return;
     }
-    int hours, minutes, seconds, milliseconds;
-    SpeedrunStopwatchGetTime(&hours, &minutes, &seconds, &milliseconds);
-    mvprintw(current_split, 0, "%-*s %02d:%02d:%02d.%03d  ", longest_split_name, splits[current_split], hours, minutes, seconds, milliseconds);
+    SpeedrunStopwatchTickTime(&stopwatch);
+    mvprintw(current_split_idx, 0, "%-*s %02d:%02d:%02d.%03d  ", split_name_width, splits[current_split_idx].name, stopwatch.hours, stopwatch.minutes, stopwatch.seconds, stopwatch.milliseconds);
 }

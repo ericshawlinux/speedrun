@@ -64,8 +64,6 @@ void SpeedrunRoutine()
         SpeedrunSplitDraw();
         refresh();
         
-        // this program is resource intensive in a way so slow it down to conserve energy.
-        // still screaming fast.
         nanosleep(&sleeptime, NULL);
     }
 }

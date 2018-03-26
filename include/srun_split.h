@@ -9,8 +9,17 @@
  * or distributed except according to the terms contained in the LICENSE file.
  */
 
+#include <time.h>
+
+#include "srun_stopwatch.h"
+
 #ifndef SRUN_SPLIT_DEFINED
 #define SRUN_SPLIT_DEFINED
+
+struct srun_split {
+    char *name;
+    struct srun_time time;
+};
 
 int SpeedrunSplitLoadFromDisk(const char *);
 void SpeedrunSplitStart();
