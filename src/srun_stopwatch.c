@@ -18,6 +18,7 @@
 #define SECONDS_PER_MINUTE  60
 #define SECONDS_PER_HOUR    (SECONDS_PER_MINUTE * 60)
 #define NANOS_PER_MSECOND   1000000
+#define NANOS_PER_SECOND    NANOS_PER_MSECOND * 1000
 
 static struct timespec start = {0};
 
@@ -32,7 +33,12 @@ void SpeedrunStopwatchGetTime(int *hours, int *minutes, int *seconds, int *milli
     
     clock_gettime(CLOCK_MONOTONIC, &now);
     
-    struct timespec currtime = {now.tv_sec - start.tv_sec, now.tv_nsec};
+    struct timespec currtime = {now.tv_sec - start.tv_sec, now.tv_nsec - start.tv_nsec};
+    
+    if (currtime.tv_nsec < 0) {
+        currtime.tv_sec -= 1;
+        currtime.tv_nsec = NANOS_PER_SECOND + currtime.tv_nsec;
+    }
     
     *hours          = (int) (currtime.tv_sec / SECONDS_PER_HOUR);
     *minutes        = (int) (currtime.tv_sec / SECONDS_PER_MINUTE);
