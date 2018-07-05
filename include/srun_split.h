@@ -21,12 +21,12 @@ struct srun_split {
     struct srun_time time;
 };
 
-int SpeedrunSplitLoadFromDisk(const char *);
-void SpeedrunSplitStart();
-void SpeedrunSplitNext();
-void SpeedrunSplitUndo();
+int srun_split_load_from_disk(const char *);
+void srun_split_start();
+void srun_split_next();
+void srun_split_undo();
 
-void SpeedrunSplitDrawEmpty(int start);
-void SpeedrunSplitDraw();
+void srun_split_draw_empty(int start);
+void srun_split_draw();
 
 #endif

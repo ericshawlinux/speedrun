@@ -16,10 +16,10 @@
 
 int main(int argc, const char **argv)
 {
-    struct Command *cmd = NULL;
+    struct srun_command *cmd = NULL;
     
     if (argc >= 2)
-        cmd = GetCommand(argv[1]);
+        cmd = get_command(argv[1]);
     
     if (cmd == NULL)
         usage_fmt_s(usage_string, argv[0]);

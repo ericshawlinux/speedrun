@@ -29,7 +29,7 @@ struct srun_stopwatch {
     int milliseconds;
 };
 
-struct srun_stopwatch SpeedrunStopwatchStart();
-void SpeedrunStopwatchTickTime(struct srun_stopwatch *);
+struct srun_stopwatch srun_stopwatch_start();
+void srun_stopwatch_tick_time(struct srun_stopwatch *);
 
 #endif

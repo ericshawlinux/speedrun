@@ -12,16 +12,16 @@
 #ifndef COMMAND_DEFINED
 #define COMMAND_DEFINED
 
-struct Command
+struct srun_command
 {
     const char *name;
     void (*fn)(int argc, const char **argv);
 };
 
-struct Command *GetCommand(const char *s);
-void HelpCommand(int argc, const char **argv);
-void StartCommand(int argc, const char **argv);
-void StubCommand(int argc, const char **argv);
-void TestCommand(int argc, const char **argv);
+struct srun_command *get_command(const char *s);
+void srun_help_command(int argc, const char **argv);
+void srun_start_command(int argc, const char **argv);
+void srun_stub_command(int argc, const char **argv);
+void srun_test_command(int argc, const char **argv);
 
-#endif // Command.h included
+#endif // command.h included

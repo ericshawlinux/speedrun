@@ -26,12 +26,12 @@ static size_t               split_name_width = 0;
 
 #define MAX_SPLIT_NAME_LENGTH 100
 
-int SpeedrunSplitLoadFromDisk(const char *filename)
+int srun_split_load_from_disk(const char *filename)
 {
     FILE *fp = fopen(filename, "r");
     
     if (fp == NULL) {
-        perror("SpeedrunSplitLoadFromDisk");
+        perror("srun_split_load_from_disk");
         return 0;
     }
     
@@ -48,7 +48,7 @@ int SpeedrunSplitLoadFromDisk(const char *filename)
         splits = realloc(splits, splits_count * sizeof current_split);
         
         if (splits == NULL) {
-            perror("SpeedrunSplitLoadFromDisk realloc");
+            perror("srun_split_load_from_disk realloc");
             return 0;
         }
         
@@ -69,26 +69,26 @@ int SpeedrunSplitLoadFromDisk(const char *filename)
     return 1;
 }
 
-void SpeedrunSplitStart()
+void srun_split_start()
 {
     current_split_idx = 0;
-    SpeedrunSplitDrawEmpty(0);
-    stopwatch = SpeedrunStopwatchStart();
+    srun_split_draw_empty(0);
+    stopwatch = srun_stopwatch_start();
 }
 
-void SpeedrunSplitNext()
+void srun_split_next()
 {
     int max_split = splits_count - 1;
     current_split_idx = (current_split_idx >= max_split ? max_split : current_split_idx + 1);
 }
 
-void SpeedrunSplitUndo()
+void srun_split_undo()
 {
     current_split_idx = (current_split_idx <= 0 ? 0 : current_split_idx - 1);
-    SpeedrunSplitDrawEmpty(current_split_idx);
+    srun_split_draw_empty(current_split_idx);
 }
 
-void SpeedrunSplitDrawEmpty(int start)
+void srun_split_draw_empty(int start)
 {
     int i;
     
@@ -98,12 +98,12 @@ void SpeedrunSplitDrawEmpty(int start)
     refresh();
 }
 
-void SpeedrunSplitDraw()
+void srun_split_draw()
 {
     if (current_split_idx >= splits_count) {
         mvprintw(0, 0, "no splits defined ");
         return;
     }
-    SpeedrunStopwatchTickTime(&stopwatch);
+    srun_stopwatch_tick_time(&stopwatch);
     mvprintw(current_split_idx, 0, "%-*s %02d:%02d:%02d.%03d  ", split_name_width, splits[current_split_idx].name, stopwatch.hours, stopwatch.minutes, stopwatch.seconds, stopwatch.milliseconds);
 }

@@ -12,8 +12,8 @@
 #ifndef SRUN_DEFINED
 #define SRUN_DEFINED
 
-void SpeedrunInit();
-void SpeedrunEnd();
-void SpeedrunRoutine();
+void srun_init();
+void srun_end();
+void srun_routine();
 
 #endif

@@ -22,31 +22,31 @@
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
-static struct Command Commands[] =
+static struct srun_command commands[] =
 {
-    {"help",    HelpCommand},
-    {"start",   StartCommand},
-    {"stub",    StubCommand},
-    {"test",    TestCommand},
+    {"help",    srun_help_command},
+    {"start",   srun_start_command},
+    {"stub",    srun_stub_command},
+    {"test",    srun_test_command},
 };
 
-struct Command *GetCommand(const char *s)
+struct srun_command *get_command(const char *s)
 {
     unsigned int i;
-    for(i = 0; i < ARRAY_SIZE(Commands); i++) {
-        struct Command *p = Commands + i;
+    for(i = 0; i < ARRAY_SIZE(commands); i++) {
+        struct srun_command *p = commands + i;
         if (!strcmp(s, p->name))
             return p;
     }
     return NULL;
 }
 
-void HelpCommand(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
+void srun_help_command(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
 {
     usage_fmt_s(usage_string, argv[0]);
 }
 
-void StartCommand(int argc, const char **argv)
+void srun_start_command(int argc, const char **argv)
 {
     const char *filename = "default-splits.txt";
     
@@ -58,25 +58,25 @@ void StartCommand(int argc, const char **argv)
         return;
     }
 
-    SpeedrunInit();
-    if (SpeedrunSplitLoadFromDisk(filename))
-        SpeedrunRoutine();
-    SpeedrunEnd();
+    srun_init();
+    if (srun_split_load_from_disk(filename))
+        srun_routine();
+    srun_end();
 }
 
-void StubCommand(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
+void srun_stub_command(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
 {
     
 }
 
-void TestCommand(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
+void srun_test_command(int argc __attribute__((unused)), const char **argv __attribute__((unused)))
 {
     struct timespec sleeptime = {0, 1000000};
-    struct srun_stopwatch stopwatch = SpeedrunStopwatchStart();
+    struct srun_stopwatch stopwatch = srun_stopwatch_start();
     struct srun_stopwatch *s = &stopwatch;
     
     while(1) {
-        SpeedrunStopwatchTickTime(s);
+        srun_stopwatch_tick_time(s);
         printf("%02d:%02d:%02d.%03d\n", s->hours, s->minutes, s->seconds, s->milliseconds);
         nanosleep(&sleeptime, NULL);
     }

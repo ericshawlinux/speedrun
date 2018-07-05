@@ -19,14 +19,14 @@
 #define NANOS_PER_MSECOND   1000000
 #define NANOS_PER_SECOND    NANOS_PER_MSECOND * 1000
 
-struct srun_stopwatch SpeedrunStopwatchStart()
+struct srun_stopwatch srun_stopwatch_start()
 {
     struct srun_stopwatch stopwatch = {0};
     clock_gettime(CLOCK_MONOTONIC, &(stopwatch.start));
     return stopwatch;
 }
 
-void SpeedrunStopwatchTickTime(struct srun_stopwatch *stopwatch)
+void srun_stopwatch_tick_time(struct srun_stopwatch *stopwatch)
 {
     struct timespec now = {0};
     clock_gettime(CLOCK_MONOTONIC, &now);

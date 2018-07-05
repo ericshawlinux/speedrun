@@ -15,7 +15,7 @@
 #include "srun.h"
 #include "srun_split.h"
 
-void SpeedrunInit()
+void srun_init()
 {
     initscr();
     noecho();
@@ -23,13 +23,13 @@ void SpeedrunInit()
     nodelay(stdscr, TRUE);
 }
 
-void SpeedrunRoutine()
+void srun_routine()
 {
     struct timespec sleeptime = {0, 1000000};
 
     int ch;
     
-    SpeedrunSplitStart();
+    srun_split_start();
 
     for (;;) {
         
@@ -37,22 +37,22 @@ void SpeedrunRoutine()
             case '1':
             case 'N':
             case 'n':
-                SpeedrunSplitNext();
+                srun_split_next();
                 break;
             
             case 'U':
             case 'u':
-                SpeedrunSplitUndo();
+                srun_split_undo();
                 break;
             
             case '0':
-                SpeedrunSplitStart();
+                srun_split_start();
                 break;
             
             case KEY_F(5):
             case 'R':
             case 'r':
-                // SpeedrunSplitDrawEmpty(0);
+                // srun_split_draw_empty(0);
                 break;
                 
             case 'Q':
@@ -61,14 +61,14 @@ void SpeedrunRoutine()
                 break;
         }
         
-        SpeedrunSplitDraw();
+        srun_split_draw();
         refresh();
         
         nanosleep(&sleeptime, NULL);
     }
 }
 
-void SpeedrunEnd()
+void srun_end()
 {
     endwin();
 }
