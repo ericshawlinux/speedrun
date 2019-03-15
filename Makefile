@@ -15,12 +15,16 @@ INCLUDES := -I./include
 SOURCES  := $(wildcard src/*.c)
 OBJECTS  := $(SOURCES:src/%.c=obj/%.o)
 PROGRAM  := speedrun
+HEADER_DEPENDENCIES := $(OBJECTS:obj/%.o=obj/%.d)
+
 
 $(PROGRAM): $(OBJECTS) Makefile
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJECTS) -o $(PROGRAM) $(LIBRARIES)
 
 $(OBJECTS) : obj/%.o : src/%.c Makefile | obj
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -MMD -c $< -o $@
+
+-include $(HEADER_DEPENDENCIES)
 
 obj :
 	@echo Creating directory $@
