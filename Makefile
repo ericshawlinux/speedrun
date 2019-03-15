@@ -16,10 +16,10 @@ SOURCES  := $(wildcard src/*.c)
 OBJECTS  := $(SOURCES:src/%.c=obj/%.o)
 PROGRAM  := speedrun
 
-$(PROGRAM): $(OBJECTS)
+$(PROGRAM): $(OBJECTS) Makefile
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJECTS) -o $(PROGRAM) $(LIBRARIES)
 
-$(OBJECTS) : obj/%.o : src/%.c | obj
+$(OBJECTS) : obj/%.o : src/%.c Makefile | obj
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 obj :
