@@ -10,14 +10,14 @@
 
 CC       := gcc
 CFLAGS   := -Wall -Wextra -Werror -g
-LIBRARYS := -lncurses
+LIBRARIES:= -lncurses
 INCLUDES := -I./include
 SOURCES  := $(wildcard src/*.c)
 OBJECTS  := $(SOURCES:src/%.c=obj/%.o)
 PROGRAM  := speedrun
 
 $(PROGRAM): $(OBJECTS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(OBJECTS) -o $(PROGRAM) $(LIBRARYS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(OBJECTS) -o $(PROGRAM) $(LIBRARIES)
 
 $(OBJECTS) : obj/%.o : src/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
