@@ -12,15 +12,14 @@ CC       := gcc
 CFLAGS   := -Wall -Wextra -Werror -g
 LIBRARYS := -lncurses
 INCLUDES := -I./include
-OBJECTS  := obj/srun_split.o obj/srun.o obj/srun_stopwatch.o obj/command.o obj/usage.o obj/main.o
+SOURCES  := $(wildcard src/*.c)
+OBJECTS  := $(SOURCES:src/%.c=obj/%.o)
 PROGRAM  := speedrun
-
-vpath %.c src
 
 $(PROGRAM): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJECTS) -o $(PROGRAM) $(LIBRARYS)
 
-obj/%.o: %.c
+$(OBJECTS) : obj/%.o : src/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
