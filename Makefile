@@ -19,8 +19,12 @@ PROGRAM  := speedrun
 $(PROGRAM): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJECTS) -o $(PROGRAM) $(LIBRARIES)
 
-$(OBJECTS) : obj/%.o : src/%.c
+$(OBJECTS) : obj/%.o : src/%.c | obj
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+obj :
+	@echo Creating directory $@
+	@if [ ! -e $@ ]; then mkdir -p $@; fi;
+
 clean:
-	rm -vf $(PROGRAM) $(OBJECTS)
+	rm -rf $(PROGRAM) obj
