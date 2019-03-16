@@ -10,18 +10,25 @@
 
 CC       := gcc
 CFLAGS   := -Wall -Wextra -Werror -g
-LIBRARYS := -lncurses
+LIBRARIES:= -lncurses
 INCLUDES := -I./include
-OBJECTS  := obj/srun_split.o obj/srun.o obj/srun_stopwatch.o obj/command.o obj/usage.o obj/main.o
+SOURCES  := $(wildcard src/*.c)
+OBJECTS  := $(SOURCES:src/%.c=obj/%.o)
 PROGRAM  := speedrun
+HEADER_DEPENDENCIES := $(OBJECTS:obj/%.o=obj/%.d)
 
-vpath %.c src
 
-$(PROGRAM): $(OBJECTS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(OBJECTS) -o $(PROGRAM) $(LIBRARYS)
+$(PROGRAM): $(OBJECTS) Makefile
+	$(CC) $(CFLAGS) $(INCLUDES) $(OBJECTS) -o $(PROGRAM) $(LIBRARIES)
 
-obj/%.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+$(OBJECTS) : obj/%.o : src/%.c Makefile | obj
+	$(CC) $(CFLAGS) $(INCLUDES) -MMD -c $< -o $@
+
+-include $(HEADER_DEPENDENCIES)
+
+obj :
+	@echo Creating directory $@
+	@if [ ! -e $@ ]; then mkdir -p $@; fi;
 
 clean:
-	rm -vf $(PROGRAM) $(OBJECTS)
+	rm -rf $(PROGRAM) obj
