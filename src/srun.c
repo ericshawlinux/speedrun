@@ -49,10 +49,9 @@ void srun_routine()
                 srun_split_start();
                 break;
             
-            case KEY_F(5):
             case 'R':
             case 'r':
-                // srun_split_draw_empty(0);
+                srun_split_draw_empty(0);
                 break;
                 
             case 'Q':

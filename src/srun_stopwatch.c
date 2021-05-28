@@ -17,7 +17,8 @@
 #define SECONDS_PER_MINUTE  60
 #define SECONDS_PER_HOUR    (SECONDS_PER_MINUTE * 60)
 #define NANOS_PER_MSECOND   1000000
-#define NANOS_PER_SECOND    NANOS_PER_MSECOND * 1000
+#define MSECOND_PER_SECOND  1000
+#define NANOS_PER_SECOND    (NANOS_PER_MSECOND * MSECOND_PER_SECOND)
 
 struct srun_stopwatch srun_stopwatch_start()
 {
@@ -42,7 +43,7 @@ void srun_stopwatch_tick_time(struct srun_stopwatch *stopwatch)
     }
     
     stopwatch->hours        = (int) (currtime.tv_sec / SECONDS_PER_HOUR);
-    stopwatch->minutes      = (int) (currtime.tv_sec / SECONDS_PER_MINUTE);
+    stopwatch->minutes      = (int) ((currtime.tv_sec - stopwatch->hours * SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
     stopwatch->seconds      = (int) (currtime.tv_sec - stopwatch->hours * SECONDS_PER_HOUR - stopwatch->minutes * SECONDS_PER_MINUTE);
     stopwatch->milliseconds = (int) (currtime.tv_nsec / NANOS_PER_MSECOND);
 }
